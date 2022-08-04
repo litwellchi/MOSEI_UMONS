@@ -53,8 +53,14 @@ More informations about the data can be found in the 'data' folder<br/>
 To train a Model_LA model on the emotion labels, use the following command :
 
 ```
-python main.py --model Model_LA --name mymodel --task emotion --multi_head 4 --ff_size 1024 --hidden_size  512 --layer 4 --batch_size 32 --lr_base 0.0001 --dropout_r 0.1
+CUDA_VISIBLE_DEVICES=1 python main.py --model Model_LA --name mymodel --task sentiment --multi_head 4 --ff_size 1024 --hidden_size  512 --layer 4 --batch_size 32 --lr_base 0.0001 --dropout_r 0.1
 ```
+
+for i in {1..4}
+do
+CUDA_VISIBLE_DEVICES=1 python main.py --model Model_LA --name mymodel --task sentiment --multi_head 4 --ff_size 1024 --hidden_size  512 --layer 4 --batch_size 32 --lr_base 0.0001 --dropout_r 0.1
+done
+
 Checkpoints are created in folder `ckpt/mymodel`
 
 Argument `task` can be set to `emotion` or `sentiment`. To make a binarized sentiment training (positive or negative), use `--task_binary True`

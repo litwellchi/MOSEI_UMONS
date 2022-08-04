@@ -287,12 +287,12 @@ class Model_LA(nn.Module):
             batch_first=True
         )
 
-        # self.lstm_y = nn.LSTM(
-        #     input_size=args.audio_feat_size,
-        #     hidden_size=args.hidden_size,
-        #     num_layers=1,
-        #     batch_first=True
-        # )
+        self.lstm_y = nn.LSTM(
+            input_size=args.audio_feat_size,
+            hidden_size=args.hidden_size,
+            num_layers=1,
+            batch_first=True
+        )
 
         # Feature size to hid size
         self.adapter = nn.Linear(args.audio_feat_size, args.hidden_size)
@@ -308,16 +308,54 @@ class Model_LA(nn.Module):
         self.proj_norm = LayerNorm(2 * args.hidden_size)
         self.proj = self.proj = nn.Linear(2 * args.hidden_size, args.ans_size)
 
-    def forward(self, x, y, _):
-        x_mask = make_mask(x.unsqueeze(2))
-        y_mask = make_mask(y)
+    def forward(self, x, y, _, flag):
+        if flag == 0:
+            x_mask = make_mask(x.unsqueeze(2))
+            y_mask = make_mask(y.unsqueeze(2))
 
-        embedding = self.embedding(x)
+            embedding = self.embedding(x)
 
-        x, _ = self.lstm_x(embedding)
-        # y, _ = self.lstm_y(y)
+            x, _ = self.lstm_x(embedding)
+            y, _ = self.lstm_x(embedding)
+        elif flag == 1:
+            x_mask = make_mask(x)
+            y_mask = make_mask(y)
 
-        y = self.adapter(y)
+            x, _ = self.lstm_y(x)
+            y, _ = self.lstm_y(y)
+        else:
+            x_mask = make_mask(x.unsqueeze(2))
+            y_mask = make_mask(y)
+
+            embedding = self.embedding(x)
+
+            x, _ = self.lstm_x(embedding)
+            y, _ = self.lstm_y(y)
+
+        # if flag == 0:
+        #     x_mask = make_mask(x.unsqueeze(2))
+        #     y_mask = make_mask(y.unsqueeze(2))
+
+        #     embedding = self.embedding(x)
+
+        #     x, _ = self.lstm_x(self.input_drop(embedding))
+        #     y, _ = self.lstm_x(self.input_drop(embedding))
+        # elif flag == 1:
+        #     x_mask = make_mask(x)
+        #     y_mask = make_mask(y)
+
+        #     x, _ = self.lstm_y(self.input_drop(y))
+        #     y, _ = self.lstm_y(self.input_drop(y))
+        # else:
+        #     x_mask = make_mask(x.unsqueeze(2))
+        #     y_mask = make_mask(y)
+
+        #     embedding = self.embedding(x)
+
+        #     x, _ = self.lstm_x(self.input_drop(embedding))
+        #     y, _ = self.lstm_y(self.input_drop(y))
+
+        # y = self.adapter(y)
 
         for i, dec in enumerate(self.enc_list):
             x_m, x_y = None, None

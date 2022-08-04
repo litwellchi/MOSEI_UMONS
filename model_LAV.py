@@ -324,7 +324,7 @@ class Model_LAV(nn.Module):
         if self.args.task == "emotion":
             self.proj = self.proj = nn.Linear(2 * args.hidden_size, 6)
 
-    def forward(self, x, y, z):
+    def forward(self, x, y, z, flag):
         x_mask = make_mask(x.unsqueeze(2))
         y_mask = make_mask(y)
         z_mask = make_mask(z)
