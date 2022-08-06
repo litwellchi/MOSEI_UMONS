@@ -51,6 +51,7 @@ def train(net, train_data, eval_loader, dict_users, args):
         loss_sum = 0
         count = 0
         flag = 0
+        train_loss = []
         for idx in idxs_users:
             count += 1
             local_net = copy.deepcopy(net)
@@ -62,13 +63,13 @@ def train(net, train_data, eval_loader, dict_users, args):
 
             local_train = LocalUpdate(args=args, dataset=train_data, idxs=dict_users[idx])
             local_w, idxs_loss = local_train.train(epoch=epoch, net=local_net, idx = idx , flag = flag, criterion=loss_fn, count = count)
-
+            train_loss.append(idxs_loss)
             ep_loss.append(copy.deepcopy(idxs_loss))
 
             w_locals.append(copy.deepcopy(local_w))  
 
             flag += 1
-
+        print(f"\n [Epoch {epoch}] training loss: {sum(train_loss)/len(train_loss)}")
 
         w_glob = FedAvg(w_locals)
         # net_merge = weight_merge(w_locals, net_glob)
@@ -123,7 +124,7 @@ def train(net, train_data, eval_loader, dict_users, args):
             # Early stop, does not start before lr_decay_times reached
             early_stop += 1
 
-
+    print(f'training loss:{ep_loss}')
     logfile.write('best_acc :' + str(best_eval_accuracy) + '\n\n')
     print('best_eval_acc :' + str(best_eval_accuracy) + '\n\n')
     os.rename(args.output + "/" + args.name +
@@ -132,7 +133,7 @@ def train(net, train_data, eval_loader, dict_users, args):
               '/best' + str(best_eval_accuracy) + "_" + str(args.seed) + '.pkl')
     logfile.close()
 
-    print(loss_list)
+    print(f"eval loss:{loss_list}")
     return eval_accuracies
 
 

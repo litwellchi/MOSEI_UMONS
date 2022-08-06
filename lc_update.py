@@ -85,4 +85,4 @@ class LocalUpdate(object):
 
                 optim.step()
 
-        return net.state_dict(), loss_tmp / self.args.batch_size
+        return net.state_dict(), loss_tmp / local_ep
