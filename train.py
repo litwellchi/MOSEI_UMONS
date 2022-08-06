@@ -64,11 +64,11 @@ def train(net, train_data, eval_loader, dict_users, args):
             local_train = LocalUpdate(args=args, dataset=train_data, idxs=dict_users[idx])
             local_w, idxs_loss = local_train.train(epoch=epoch, net=local_net, idx = idx , flag = flag, criterion=loss_fn, count = count)
             train_loss.append(idxs_loss)
-            ep_loss.append(copy.deepcopy(idxs_loss))
 
             w_locals.append(copy.deepcopy(local_w))  
 
             flag += 1
+        ep_loss.append(sum(train_loss)/len(train_loss))
         print(f"\n [Epoch {epoch}] training loss: {sum(train_loss)/len(train_loss)}")
 
         w_glob = FedAvg(w_locals)

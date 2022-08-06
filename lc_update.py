@@ -57,7 +57,7 @@ class LocalUpdate(object):
                 if flag == 1:
                     pred = net(y, y, y, flag)
                 # pred = net(x, y, z, flag)
-
+                ans = torch.nn.functional.one_hot(ans,7)
                 loss = criterion(pred, ans)
                 loss.backward()
 
