@@ -42,12 +42,12 @@ def train(net, train_data, eval_loader, dict_users, args):
     # idxs_users = np.random.choice(range(6), 6, replace=False)
     idxs_users = [0,1]
     ep_loss = []
-    w_locals = []
     wl_locals = []
     wa_locals = []
     wv_locals = []
     loss_list = []
     for epoch in range(0, args.max_epoch):
+        w_locals = []
         loss_sum = 0
         count = 0
         flag = 0

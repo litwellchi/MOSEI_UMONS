@@ -4,7 +4,7 @@ from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics import accuracy_score, f1_score
-
+from scipy.stats import ttest_ind
 
 def multiclass_acc(preds, truths):
     """
@@ -31,6 +31,8 @@ def weighted_accuracy(test_preds_emo, test_truth_emo):
 def eval_mosei_senti(results, truths, exclude_zero=False):
     test_preds = results.view(-1).cpu().detach().numpy()
     test_truth = truths.view(-1).cpu().detach().numpy()
+    
+    ttest = ttest_ind(test_preds, test_truth).pvalue
 
     non_zeros = np.array([i for i, e in enumerate(test_truth) if e != 0 or (not exclude_zero)])
 
@@ -54,7 +56,7 @@ def eval_mosei_senti(results, truths, exclude_zero=False):
     # print("mult_acc_5: ", mult_a5)
     print("F1 score: ", f_score)
     print("Accuracy: ", accuracy_score(binary_truth, binary_preds))
-
+    print("statistical tes: ", ttest)
     print("-" * 50)
 
     return mae
